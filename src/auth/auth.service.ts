@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   async register(username: string, password: string) {
-    bcrypt.hash(password, saltRounds).then(hash => {
+    return bcrypt.hash(password, saltRounds).then(hash => {
       return this.usersService.insert(username, hash);
     });
   }
