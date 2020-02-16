@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 const bcrypt = require('bcrypt');
@@ -32,7 +32,15 @@ export class AuthService {
 
   async register(username: string, password: string) {
     return bcrypt.hash(password, saltRounds).then(hash => {
-      return this.usersService.insert(username, hash);
+      return this.usersService
+        .checkDuplicateUsername(username, hash)
+        .then(isDuplicate => {
+          if (!isDuplicate) {
+            return this.usersService.insert(username, hash);
+          } else {
+            return false;
+          }
+        });
     });
   }
 }
